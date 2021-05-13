@@ -9,21 +9,26 @@
     const [result] = await client.faceDetection(fileName);
     const faces = result.faceAnnotations;
     // console.log(JSON.stringify(faces, null, 2))
-    const leftEyePosition = faces[0].landmarks.filter(l => l.type === "LEFT_EYE")[0].position;
-    const rightEyePosition = faces[0].landmarks.filter(l => l.type === "RIGHT_EYE")[0].position;
+    const leftEyePosition = faces[0].landmarks.find(l => l.type === "LEFT_EYE").position;
+    const rightEyePosition = faces[0].landmarks.find(l => l.type === "RIGHT_EYE").position;
     console.log({ leftEyePosition });
     console.log({ rightEyePosition });
+    const imageSize = 250
+    const halfImageSize = imageSize / 2
+    const laserEye = await sharp(laserEyeFilename)
+        .resize(imageSize, imageSize)
+        .toBuffer();
     const oneEye = await sharp(fileName)
         .composite([{
-            left: parseInt(leftEyePosition.x) - 10, //TODO: round instead of truncate
-            top: parseInt(leftEyePosition.y) - 10,
-            input: laserEyeFilename
+            left: parseInt(leftEyePosition.x) - halfImageSize, //TODO: round instead of truncate
+            top: parseInt(leftEyePosition.y) - halfImageSize,
+            input: laserEye
         }])
         .toBuffer();
     sharp(oneEye).composite([{
-        left: parseInt(rightEyePosition.x) - 10,
-        top: parseInt(rightEyePosition.y) - 10,
-        input: laserEyeFilename
+        left: parseInt(rightEyePosition.x) - halfImageSize,
+        top: parseInt(rightEyePosition.y) - halfImageSize,
+        input: laserEye
     }])
     .toFile('output.jpg', (err) => {
         console.log("error: ", err)
