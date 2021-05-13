@@ -1,0 +1,17 @@
+{
+  "name": "lasereyes",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "cross-env GOOGLE_APPLICATION_CREDENTIALS=laser-eyes-313605-fa8c4c93b8e2.json node index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@google-cloud/vision": "^2.3.2",
+    "cross-env": "^7.0.3",
+    "sharp": "^0.28.2"
+  }
+}
