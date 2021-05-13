@@ -5,13 +5,18 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "cross-env GOOGLE_APPLICATION_CREDENTIALS=laser-eyes-313605-fa8c4c93b8e2.json node index.js"
+    "start": "cross-env GOOGLE_APPLICATION_CREDENTIALS=laser-eyes-313605-fa8c4c93b8e2.json node index.js",
+    "cli": "cross-env GOOGLE_APPLICATION_CREDENTIALS=laser-eyes-313605-fa8c4c93b8e2.json node cli.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@google-cloud/vision": "^2.3.2",
+    "@koa/cors": "^3.1.0",
     "cross-env": "^7.0.3",
+    "koa": "^2.13.1",
+    "koa-bodyparser": "^4.3.0",
+    "koa-router": "^10.0.0",
     "sharp": "^0.28.2"
   }
 }
