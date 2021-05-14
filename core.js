@@ -1,8 +1,8 @@
 const sharp = require('sharp')
 const vision = require('@google-cloud/vision');
-const client = new vision.ImageAnnotatorClient();
 
 async function core(fileName, laserEyeFilename, outputFilename) {
+    const client = new vision.ImageAnnotatorClient();
     const [result] = await client.faceDetection(fileName);
     const faces = result.faceAnnotations;
     // console.log(JSON.stringify(faces, null, 2))
