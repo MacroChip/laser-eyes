@@ -19,8 +19,8 @@ console.log(`Server running on port ${PORT}`);
 
 async function createGoogleApiJson() {
     try {
-        await fs.stat(env.process.GOOGLE_APPLICATION_CREDENTIALS);
+        await fs.stat(process.env.GOOGLE_APPLICATION_CREDENTIALS);
     } catch (e) {
-        await fs.writeFile(env.process.GOOGLE_APPLICATION_CREDENTIALS, env.process.GOOGLE_API_JSON);
+        await fs.writeFile(process.env.GOOGLE_APPLICATION_CREDENTIALS, process.env.GOOGLE_API_JSON);
     }
 }
