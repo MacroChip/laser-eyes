@@ -1,15 +1,13 @@
-import Koa from 'koa';
-import bodyparser from 'koa-bodyparser';
-import Router from 'koa-router';
+const Koa = require('koa');
+const Router = require('koa-router');
 const cors = require('@koa/cors');
 
 const app = new Koa();
 const router = new Router();
 
-require('./api').default(router)
+require('./api').api(router)
 
 app
-    .use(bodyparser())
     .use(cors())
     .use(router.routes())
 
