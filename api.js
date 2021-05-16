@@ -5,13 +5,22 @@ const fs = require('fs');
 module.exports = {
     api: (router) => {
         router.get('/', async ctx => ctx.body = "hello world");
-        router.post('/laserify', koaBody({ multipart: true }), async (ctx, next) => {
+        router.get('/api', async ctx => {
+            // await sleep(3000)
+            return ctx.body = "hello world";
+        });
+        router.post('/api/laserify', koaBody({ multipart: true }), async (ctx, next) => {
             const baseImage = ctx.request.files.image.path;
             const outputFilename = Date.now().toString() + '.png';
             const result = await core(baseImage, './laser-flare.webp', outputFilename);
+            // await sleep(2000)
             ctx.response.status = 200;
             ctx.attachment('laser-eyes.jpg');
             ctx.response.body = fs.createReadStream(outputFilename);
         });
     }
 };
+
+function sleep(ms) {
+    return new Promise(res => setTimeout(res, ms));
+}
