@@ -12,7 +12,13 @@ module.exports = {
         router.post('/api/laserify', koaBody({ multipart: true }), async (ctx, next) => {
             const baseImage = ctx.request.files.image.path;
             const outputFilename = Date.now().toString() + '.png';
-            const result = await core(baseImage, './laser-flare.webp', outputFilename);
+            try {
+                const result = await core(baseImage, './laser-flare.webp', outputFilename);
+            } catch (e) {
+                ctx.response.status = 200;
+                ctx.response.body = { error: e }
+                return;
+            }
             // await sleep(2000)
             ctx.response.status = 200;
             ctx.attachment('laser-eyes.jpg');
