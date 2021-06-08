@@ -15,7 +15,7 @@ module.exports = {
             try {
                 const result = await core(baseImage, './laser-flare.webp', outputFilename);
             } catch (e) {
-                ctx.response.status = 200;
+                ctx.response.status = 400;
                 ctx.response.body = { error: e }
                 return;
             }
