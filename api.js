@@ -14,9 +14,14 @@ module.exports = {
             const outputFilename = Date.now().toString() + '.png';
             try {
                 const result = await core(baseImage, './laser-flare.webp', outputFilename);
+                console.log(`result for ${baseImage} is `, JSON.stringify(result));
             } catch (e) {
                 ctx.response.status = 400;
-                ctx.response.body = { error: JSON.stringify(e) }
+                if (e) {
+                    ctx.response.body = { error: e.message || e };
+                } else {
+                    ctx.response.body = { error: 'Unknown error' };
+                }
                 return;
             }
             // await sleep(2000)
