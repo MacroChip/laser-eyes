@@ -11,7 +11,11 @@ async function core(faceFilename, laserEyeFilename, outputFilename) {
     // console.log(JSON.stringify(faces, null, 2))
     const baseImage = sharp(faceFilename);
     const baseImageMetadata = await baseImage.metadata();
-    return putEyesOnOneFace(faces[0], baseImage, baseImageMetadata, laserEyeFilename, outputFilename);
+    let laseredEyes = putEyesOnOneFace(faces[0], baseImage, baseImageMetadata, laserEyeFilename, outputFilename);
+    for (face in faces.slice(1)) {
+        laseredEyes = putEyesOnOneFace(face, outputFilename, baseImageMetadata, laserEyeFilename, outputFilename);
+    }
+    return laseredEyes;
 }
 
 function putEyesOnOneFace(face, baseImage, baseImageMetadata, laserEyeFilename, outputFilename) {
