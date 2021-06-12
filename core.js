@@ -5,6 +5,9 @@ async function core(faceFilename, laserEyeFilename, outputFilename) {
     const client = new vision.ImageAnnotatorClient();
     const [result] = await client.faceDetection(faceFilename);
     const faces = result.faceAnnotations;
+    if (!faces || !faces[0]) {
+        throw "Couldn't find any faces";
+    }
     // console.log(JSON.stringify(faces, null, 2))
     const leftEyePosition = faces[0].landmarks.find(l => l.type === "LEFT_EYE").position;
     const rightEyePosition = faces[0].landmarks.find(l => l.type === "RIGHT_EYE").position;
