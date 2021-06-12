@@ -9,18 +9,22 @@ async function core(faceFilename, laserEyeFilename, outputFilename) {
         throw "Couldn't find any faces";
     }
     // console.log(JSON.stringify(faces, null, 2))
-    const leftEyePosition = faces[0].landmarks.find(l => l.type === "LEFT_EYE").position;
-    const rightEyePosition = faces[0].landmarks.find(l => l.type === "RIGHT_EYE").position;
+    const baseImage = sharp(faceFilename);
+    const baseImageMetadata = await baseImage.metadata();
+    return putEyesOnOneFace(faces[0], baseImage, baseImageMetadata, laserEyeFilename, outputFilename);
+}
+
+function putEyesOnOneFace(face, baseImage, baseImageMetadata, laserEyeFilename, outputFilename) {
+    const leftEyePosition = face.landmarks.find(l => l.type === "LEFT_EYE").position;
+    const rightEyePosition = face.landmarks.find(l => l.type === "RIGHT_EYE").position;
     console.log({ leftEyePosition });
     console.log({ rightEyePosition });
-    const face = sharp(faceFilename);
-    const faceMetadata = await face.metadata();
-    const imageSize = Math.min(faceMetadata.width, faceMetadata.height, 250);
+    const imageSize = Math.min(baseImageMetadata.width, baseImageMetadata.height, 250);
     const halfImageSize = imageSize / 2
     const laserEye = await sharp(laserEyeFilename)
         .resize(imageSize, imageSize)
         .toBuffer();
-    const oneEye = await face
+    const oneEye = await baseImage
         .composite([{
             left: parseInt(leftEyePosition.x) - halfImageSize, //TODO: round instead of truncate
             top: parseInt(leftEyePosition.y) - halfImageSize,
