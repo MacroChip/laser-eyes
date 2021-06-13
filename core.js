@@ -11,14 +11,14 @@ async function core(faceFilename, laserEyeFilename, outputFilename) {
     // console.log(JSON.stringify(faces, null, 2))
     const baseImage = sharp(faceFilename);
     const baseImageMetadata = await baseImage.metadata();
-    let laseredEyes = putEyesOnOneFace(faces[0], baseImage, baseImageMetadata, laserEyeFilename, outputFilename);
-    for (face in faces.slice(1)) {
-        laseredEyes = putEyesOnOneFace(face, outputFilename, baseImageMetadata, laserEyeFilename, outputFilename);
+    let laseredEyes = await putEyesOnOneFace(faces[0], baseImage, baseImageMetadata, laserEyeFilename, outputFilename);
+    for (face of faces.slice(1)) {
+        laseredEyes = await putEyesOnOneFace(face, sharp(outputFilename), baseImageMetadata, laserEyeFilename, outputFilename);
     }
     return laseredEyes;
 }
 
-function putEyesOnOneFace(face, baseImage, baseImageMetadata, laserEyeFilename, outputFilename) {
+async function putEyesOnOneFace(face, baseImage, baseImageMetadata, laserEyeFilename, outputFilename) {
     const leftEyePosition = face.landmarks.find(l => l.type === "LEFT_EYE").position;
     const rightEyePosition = face.landmarks.find(l => l.type === "RIGHT_EYE").position;
     console.log({ leftEyePosition });
