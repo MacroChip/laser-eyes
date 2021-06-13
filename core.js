@@ -11,36 +11,33 @@ async function core(faceFilename, laserEyeFilename, outputFilename) {
     // console.log(JSON.stringify(faces, null, 2))
     const baseImage = sharp(faceFilename);
     const baseImageMetadata = await baseImage.metadata();
-    let laseredEyes = await putEyesOnOneFace(faces[0], baseImage, baseImageMetadata, laserEyeFilename, outputFilename);
-    for (face of faces.slice(1)) {
-        laseredEyes = await putEyesOnOneFace(face, sharp(outputFilename), baseImageMetadata, laserEyeFilename, outputFilename);
-    }
-    return laseredEyes;
+    const imageSize = Math.min(baseImageMetadata.width, baseImageMetadata.height, 250);
+    const halfImageSize = imageSize / 2;
+    const laserEye = await sharp(laserEyeFilename)
+        .resize(imageSize, imageSize)
+        .toBuffer();
+    return baseImage
+        .composite(faces.map(face => eyesComposites(face, halfImageSize, laserEye)).flat())
+        .toFile(outputFilename);
 }
 
-async function putEyesOnOneFace(face, baseImage, baseImageMetadata, laserEyeFilename, outputFilename) {
+function eyesComposites(face, halfImageSize, laserEye) {
     const leftEyePosition = face.landmarks.find(l => l.type === "LEFT_EYE").position;
     const rightEyePosition = face.landmarks.find(l => l.type === "RIGHT_EYE").position;
     console.log({ leftEyePosition });
     console.log({ rightEyePosition });
-    const imageSize = Math.min(baseImageMetadata.width, baseImageMetadata.height, 250);
-    const halfImageSize = imageSize / 2
-    const laserEye = await sharp(laserEyeFilename)
-        .resize(imageSize, imageSize)
-        .toBuffer();
-    const oneEye = await baseImage
-        .composite([{
+    return [
+        {
             left: parseInt(leftEyePosition.x) - halfImageSize, //TODO: round instead of truncate
             top: parseInt(leftEyePosition.y) - halfImageSize,
             input: laserEye
-        }])
-        .toBuffer();
-    return sharp(oneEye).composite([{
-        left: parseInt(rightEyePosition.x) - halfImageSize,
-        top: parseInt(rightEyePosition.y) - halfImageSize,
-        input: laserEye
-    }])
-    .toFile(outputFilename);
+        },
+        {
+            left: parseInt(rightEyePosition.x) - halfImageSize,
+            top: parseInt(rightEyePosition.y) - halfImageSize,
+            input: laserEye
+        }
+    ];
 }
 
 module.exports = {
