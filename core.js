@@ -24,8 +24,8 @@ async function core(faceFilename, laserEyeFilename, outputFilename) {
 function eyesComposites(face, halfImageSize, laserEye) {
     const leftEyePosition = face.landmarks.find(l => l.type === "LEFT_EYE").position;
     const rightEyePosition = face.landmarks.find(l => l.type === "RIGHT_EYE").position;
-    console.log({ leftEyePosition });
-    console.log({ rightEyePosition });
+    console.log(JSON.stringify(leftEyePosition, null, 2));
+    console.log(JSON.stringify(rightEyePosition, null, 2));
     return [
         {
             left: parseInt(leftEyePosition.x) - halfImageSize, //TODO: round instead of truncate
