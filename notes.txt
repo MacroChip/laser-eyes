@@ -1,0 +1,8 @@
+make laser size of eyes
+stop laser shading from shading over other lasers
+fetch input image from url
+    -login with socials to auto get url
+choose laser style
+lasers shooting across screen
+laser color picker
+do tilted heads put laser not correctly centered? liz and i on place picture shows problem

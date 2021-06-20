@@ -4,11 +4,15 @@ const vision = require('@google-cloud/vision');
 async function core(faceFilename, laserEyeFilename, outputFilename) {
     const client = new vision.ImageAnnotatorClient();
     const [result] = await client.faceDetection(faceFilename);
+    return _core(faceFilename, laserEyeFilename, outputFilename, result);
+}
+
+async function _core(faceFilename, laserEyeFilename, outputFilename, result) {
     const faces = result.faceAnnotations;
     if (!faces || !faces[0]) {
         throw "Couldn't find any faces";
     }
-    // console.log(JSON.stringify(faces, null, 2))
+    console.log(JSON.stringify(faces, null, 2));
     const baseImage = sharp(faceFilename);
     const baseImageMetadata = await baseImage.metadata();
     const imageSize = Math.min(baseImageMetadata.width, baseImageMetadata.height, 250);
@@ -41,5 +45,6 @@ function eyesComposites(face, halfImageSize, laserEye) {
 }
 
 module.exports = {
-    core
+    core,
+    _core,
 }

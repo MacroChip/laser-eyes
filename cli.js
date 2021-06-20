@@ -1,5 +1,5 @@
-const core = require('./core.js').core;
+const { _core, core } = require('./core.js');
 
 (async () => {
-    core('./images/chip-and-liz.jpg', './laser-flare.webp', 'output.png')
+    _core('./images/chip-and-liz.jpg', './laser-flare.webp', 'output.png', require('./test.json'))
 })()
