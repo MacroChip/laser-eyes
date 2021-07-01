@@ -1,4 +1,5 @@
 make laser size of eyes
+    for each laser asset, find size of core laser in x and y. Then find size of eye in base image. scale laser up/down to eye size.
 stop laser shading from shading over other lasers
 fetch input image from url
     -login with socials to auto get url
