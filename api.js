@@ -13,6 +13,7 @@ module.exports = {
             const baseImage = ctx.request.files.image.path;
             const outputFilename = Date.now().toString() + '.png';
             try {
+                const eyeColor = ctx.request can I have a body and file upload at same time? //also is this error handling good enough
                 const result = await core(baseImage, './laser-flare.webp', outputFilename);
                 console.log(`result for ${baseImage} is `, JSON.stringify(result));
             } catch (e) {
@@ -31,6 +32,18 @@ module.exports = {
         });
     }
 };
+
+function getAssetChoice(eyeColor) {
+    const eyeColors = {
+        'blue': 'blue-laser-eye.png',
+        'red': 'laser-flare.webp',
+    };
+    const asset = eyeColors[eyeColor];
+    if (!asset) {
+        throw new Error(`Invalid eye color ${eyeColor}`);
+    }
+    return asset;
+}
 
 function sleep(ms) {
     return new Promise(res => setTimeout(res, ms));
