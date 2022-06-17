@@ -24,25 +24,27 @@ async function _core(faceFilename, laserEyeFilename, outputFilename, result) {
 
 async function eyesComposites(face, laserEyeFilename, baseMetadata) {
     //this assumes both eyes are same size. that is bad assumption for i.e. angled faces
-    const headSize = computeHeadSize(face.landmarks, baseMetadata);
+    const headSize = computeHeadSize(face, baseMetadata);
     const halfImageSize = headSize / 2;
+    console.log(`roll`, face.rollAngle)
     const laserEye = await sharp(laserEyeFilename)
-        .resize(headSize, headSize)
+        .rotate(face.rollAngle, { background: "#00000000" })
+        .resize(headSize, null)
         .toBuffer();
     const forehead = face.fdBoundingPoly.vertices[0];
     // console.log(JSON.stringify(forehead, null, 2));
     return [
         {
             left: Math.round(parseFloat(forehead.x)),
-            top: Math.round(parseFloat(forehead.y) - halfImageSize),
-            input: laserEye
+            top: Math.round(parseFloat(getLandmark(face.landmarks, "FOREHEAD_GLABELLA").y) - headSize / 1.25),
+            input: laserEye,
         }
     ];
 }
 
-function computeHeadSize(landmarks, baseMetadata) {
-    let headSize = parseFloat(getLandmark(landmarks, "RIGHT_EYE_RIGHT_CORNER").x) - parseFloat(getLandmark(landmarks, "LEFT_EYE_LEFT_CORNER").x); //TODO: abs for upsidedown headS? have to see what api does
-    headSize = headSize * laserSizeMultiplier;
+function computeHeadSize(face, baseMetadata) {
+    let headSize = parseFloat(face.fdBoundingPoly.vertices[1].x) - parseFloat(face.fdBoundingPoly.vertices[0].x); //TODO: abs for upsidedown headS? have to see what api does
+    // headSize = headSize * laserSizeMultiplier;
     return Math.round(Math.min(headSize, baseMetadata.width));
 }
 
