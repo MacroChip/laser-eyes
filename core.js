@@ -2,6 +2,7 @@ const sharp = require('sharp')
 const vision = require('@google-cloud/vision');
 
 const laserSizeMultiplier = 1.6;
+const FULL_ALPHA = "#00000000";
 
 async function core(faceFilename, laserEyeFilename, outputFilename) {
     const client = new vision.ImageAnnotatorClient();
@@ -28,7 +29,8 @@ async function eyesComposites(face, laserEyeFilename, baseMetadata) {
     const halfImageSize = headSize / 2;
     console.log(`roll`, face.rollAngle)
     const laserEye = await sharp(laserEyeFilename)
-        .rotate(face.rollAngle, { background: "#00000000" })
+        .rotate(face.rollAngle, { background: FULL_ALPHA })
+        .flop(!!(face.panAngle < 0))
         .resize(headSize, null)
         .toBuffer();
     const forehead = face.fdBoundingPoly.vertices[0];
