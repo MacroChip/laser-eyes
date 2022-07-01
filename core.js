@@ -1,16 +1,15 @@
 const sharp = require('sharp')
 const vision = require('@google-cloud/vision');
 
-const laserSizeMultiplier = 1.6;
 const FULL_ALPHA = "#00000000";
 
-async function core(faceFilename, laserEyeFilename, outputFilename) {
+async function core(faceFilename, overlayFilename, outputFilename) {
     const client = new vision.ImageAnnotatorClient();
     const [result] = await client.faceDetection(faceFilename);
-    return _core(faceFilename, laserEyeFilename, outputFilename, result);
+    return _core(faceFilename, overlayFilename, outputFilename, result);
 }
 
-async function _core(faceFilename, laserEyeFilename, outputFilename, result) {
+async function _core(faceFilename, overlayFilename, outputFilename, result) {
     const faces = result.faceAnnotations;
     if (!faces || !faces[0]) {
         throw "Couldn't find any faces";
@@ -19,16 +18,13 @@ async function _core(faceFilename, laserEyeFilename, outputFilename, result) {
     const base = sharp(faceFilename);
     const baseMetadata = await base.metadata();
     return base
-        .composite((await Promise.all(faces.map(face => eyesComposites(face, laserEyeFilename, baseMetadata)))).flat())
+        .composite((await Promise.all(faces.map(face => overlayComposites(face, overlayFilename, baseMetadata)))).flat())
         .toFile(outputFilename);
 }
 
-async function eyesComposites(face, laserEyeFilename, baseMetadata) {
-    //this assumes both eyes are same size. that is bad assumption for i.e. angled faces
+async function overlayComposites(face, overlayFilename, baseMetadata) {
     const headSize = computeHeadSize(face, baseMetadata);
-    const halfImageSize = headSize / 2;
-    console.log(`roll`, face.rollAngle)
-    const laserEye = await sharp(laserEyeFilename)
+    const overlay = await sharp(overlayFilename)
         .rotate(face.rollAngle, { background: FULL_ALPHA })
         .flop(!!(face.panAngle < 0))
         .resize(headSize, null)
@@ -39,7 +35,7 @@ async function eyesComposites(face, laserEyeFilename, baseMetadata) {
         {
             left: Math.round(parseFloat(forehead.x)),
             top: Math.round(parseFloat(getLandmark(face.landmarks, "FOREHEAD_GLABELLA").y) - headSize / 1.25),
-            input: laserEye,
+            input: overlay,
         }
     ];
 }
